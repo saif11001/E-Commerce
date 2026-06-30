@@ -4,8 +4,14 @@ import cookieParser from "cookie-parser";
 
 import { connectDB } from "./src/config/db.js";
 import authRouter from "./src/routers/auth.route.js";
-import userRouter from "./src/routers/user.route.js";
+
 import adminRouter from "./src/routers/admin/users.route.js";
+import categoryAdminRouter from "./src/routers/admin/category.route.js";
+import productAdminRouter from "./src/routers/admin/product.route.js";
+
+import userRouter from "./src/routers/users/user.route.js";
+import productRouter from "./src/routers/users/product.route.js";
+
 
 dotenv.config();
 
@@ -17,8 +23,13 @@ app.use(express.json());
 app.use(cookieParser());
 
 app.use('/api/v1/auth/', authRouter);
-app.use('/api/v1/user/', userRouter);
+
 app.use('/api/v1/admin/', adminRouter);
+app.use('/api/v1/admin/categories', categoryAdminRouter);
+app.use('/api/v1/admin/products', productAdminRouter);
+
+app.use('/api/v1/user/', userRouter);
+app.use('/api/v1/products/', productRouter);
 
 connectDB().then(() => {
     app.listen(PORT, () => {

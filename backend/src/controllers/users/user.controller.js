@@ -1,11 +1,11 @@
 import bcrypt from 'bcryptjs';
 
-import { User } from "../models/user.model.js"
-import { sendVerificationEmail } from "../nodemailer/emails.js";
+import { User } from "../../models/user.model.js"
+import { sendVerificationEmail } from "../../nodemailer/emails.js";
 
 export const getUser = async (req, res, next) => {
     try {
-        const user = await User.findById(req.userId);
+        const user = await User.findById(req.user._id);
         if(!user) {
             return res.status(400).json({ success: false, message: "User not found" });
         }
@@ -25,7 +25,7 @@ export const getUser = async (req, res, next) => {
 export const updateUser = async (req, res, next) => {
     const { name, email, password } = req.body || {} ;
     try {
-        const user = await User.findById(req.userId);
+        const user = await User.findById(req.user._id);
         if(!user) {
             return res.status(400).json({ success: false, message: "User not found" });
         }
