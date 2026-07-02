@@ -15,6 +15,10 @@ const userSchema = new mongoose.Schema(
             type: String,
             required: true
         },
+        profileImage: {
+            type: String,
+            default: ""
+        },
         lastLogin: {
             type: Date,
             default: Date.now

@@ -11,6 +11,7 @@ import productAdminRouter from "./src/routers/admin/product.route.js";
 
 import userRouter from "./src/routers/users/user.route.js";
 import productRouter from "./src/routers/users/product.route.js";
+import cartRouter from "./src/routers/users/cart.route.js";
 
 
 dotenv.config();
@@ -21,6 +22,7 @@ const app = express();
 
 app.use(express.json());
 app.use(cookieParser());
+app.use('/uploads', express.static('uploads'));
 
 app.use('/api/v1/auth/', authRouter);
 
@@ -30,6 +32,7 @@ app.use('/api/v1/admin/products', productAdminRouter);
 
 app.use('/api/v1/user/', userRouter);
 app.use('/api/v1/products/', productRouter);
+app.use('/api/v1/cart/', cartRouter);
 
 connectDB().then(() => {
     app.listen(PORT, () => {

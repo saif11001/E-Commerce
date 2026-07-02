@@ -2,6 +2,7 @@ import bcrypt from 'bcryptjs';
 
 import { User } from "../../models/user.model.js"
 import { sendVerificationEmail } from "../../nodemailer/emails.js";
+import { deleteImage } from "../../utils/deleteImage.js";
 
 export const getUser = async (req, res, next) => {
     try {
@@ -28,6 +29,11 @@ export const updateUser = async (req, res, next) => {
         const user = await User.findById(req.user._id);
         if(!user) {
             return res.status(400).json({ success: false, message: "User not found" });
+        }
+        
+        if(req.file) {
+            if(user.profileImage) deleteImage(user.profileImage);
+            user.profileImage = `/uploads/users/${req.file.filename}`;
         }
 
         if(name !== undefined) {

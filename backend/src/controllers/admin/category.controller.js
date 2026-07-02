@@ -1,5 +1,6 @@
 import { Category } from "../../models/category.model.js";
 import { Product } from "../../models/product.model.js";
+import { deleteImage } from "../../utils/deleteImage.js";
 
 const generateSlug = (name) => {
     return name.toLowerCase()
@@ -13,21 +14,25 @@ export const createCategory = async (req, res, next) => {
     try {
         const categoryExists = await Category.findOne({ name });
         if(categoryExists) {
+            if(req.file) deleteImage(`/uploads/categories/${req.file.filename}`);
             return res.status(400).json({ success: false, message: "Category already exists." });
         }
 
         const slug = generateSlug(name);
+        const image = req.file ? `/uploads/categories/${req.file.filename}` : "";
 
         const category = new Category({
             name,
             description,
-            slug
+            slug,
+            image
         })
         await category.save();
 
         res.status(201).json({ success: true, message: "Create category successfully", category: category });
 
     } catch (error) {
+        if(req.file) deleteImage(`/uploads/categories/${req.file.filename}`);
         res.status(500).json({ success: false, message: error.message });
     }
 }
@@ -66,6 +71,11 @@ export const updateCategory = async (req, res, next) => {
             return res.status(400).json({ success: false, message: "Category not found." });
         }
 
+        if(req.file) {
+            if(category.image) deleteImage(category.image);
+            category.image = `/uploads/categories/${req.file.filename}`;
+        }
+
         if(name) {
             if(category.name === name) {
                 return res.status(400).json({ success: false, message: "Please create a new name for the category, different from the current name." });
@@ -98,6 +108,8 @@ export const deleteCategory = async (req, res, next) => {
         if(hasProducts) {
             return res.status(400).json({ success: false, message: "Cannot delete category with existing products." });
         }
+
+        if(category.image) deleteImage(category.image);
 
         await Category.findByIdAndDelete(categoryId);
         res.status(200).json({ success: true, message: "Category deleted successfully" });
